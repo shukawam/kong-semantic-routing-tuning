@@ -1,0 +1,110 @@
+_format_version: "3.0"
+_konnect:
+  control_plane_name: semtune-gateway
+
+services:
+  - name: semantic-routing-service
+    url: https://example.com
+    routes:
+      - name: semantic-routing-route
+        paths:
+          - /v1
+        strip_path: true
+        plugins:
+          - name: ai-proxy-advanced
+            config:
+              llm_format: openai # OpenAI互換の入出力をサポートする
+              model_name_header: true
+              # セマンティックロードバランシングを有効化
+              balancer:
+                algorithm: semantic
+                retries: 3
+                failover_criteria:
+                  - error
+                  - timeout
+                  - http_429
+                  - http_503
+                  - non_idempotent
+              # セマンティックロードバランシンシングを実施するための埋め込みモデル
+              embeddings:
+                auth: &ms-foundry-auth-config
+                  allow_override: false
+                  header_name: api-key
+                  header_value: ${{ env "DECK_AZURE_OPENAI_API_KEY" }}
+                model:
+                  provider: azure
+                  name: text-embedding-3-large
+                  options:
+                    azure:
+                      instance: ${{ env "DECK_AZURE_OPENAI_INSTANCE" }}
+                      api_version: "2024-02-01"
+                      deployment_id: text-embedding-3-large
+              # descriptionの埋め込みを保持するためのVectorDB(Redis)
+              vectordb:
+                strategy: redis
+                dimensions: 3072
+                distance_metric: cosine
+                threshold: 0.5
+                redis:
+                  host: kong-redis
+                  port: 6379
+              # ルーティング対象モデルの定義。
+              # description は data/routing_targets.yaml と 1 文字も違わないこと
+              # (Kong は Redis のキーを sha256(description) から導くため)。
+              targets:
+                - route_type: llm/v1/chat
+                  description: 国内外の市場動向、金利・為替・株式の相場見通し、経済指標やアナリストレポートの要約、解説を行う
+                  auth:
+                    <<: *ms-foundry-auth-config
+                  model:
+                    provider: azure
+                    name: gpt-5.6-sol # 高度な推論が必要なため、gpt-5.6の最上位モデルを使用
+                    options:
+                      max_tokens: 1024
+                      temperature: 1.0
+                      azure_api_version: 2024-12-01-preview
+                      azure_instance: shukawam-ai-foundry-resource
+                      azure_deployment_id: gpt-5.6-sol
+                - route_type: llm/v1/chat
+                  description: コード生成、レビュー、SQL、バッチ障害の調査などの開発支援を行う
+                  auth:
+                    <<: *ms-foundry-auth-config
+                  model:
+                    provider: azure
+                    name: gpt-5.6-terra # 開発支援は中位モデルで十分
+                    options:
+                      max_tokens: 1024
+                      temperature: 1.0
+                      azure_api_version: 2024-12-01-preview
+                      azure_instance: shukawam-ai-foundry-resource
+                      azure_deployment_id: gpt-5.6-terra
+                - route_type: llm/v1/chat
+                  description: CATCHALL # thresholdをいずれも満たさない場合は、このモデルにFallbackされる
+                  auth:
+                    <<: *ms-foundry-auth-config
+                  model:
+                    provider: azure
+                    name: gpt-5.6-luna
+                    options:
+                      max_tokens: 1024
+                      temperature: 1.0
+                      azure_api_version: 2024-12-01-preview
+                      azure_instance: shukawam-ai-foundry-resource
+                      azure_deployment_id: gpt-5.6-luna
+
+plugins:
+  - name: opentelemetry
+    config:
+      traces_endpoint: http://otel-collector:4318/v1/traces
+      logs_endpoint: http://otel-collector:4318/v1/logs
+      access_logs:
+        endpoint: http://otel-collector:4318/v1/logs
+      metrics:
+        endpoint: http://otel-collector:4318/v1/metrics
+        push_interval: 20
+        enable_ai_metrics: true
+        enable_bandwidth_metrics: true
+        enable_latency_metrics: true
+        enable_request_metrics: true
+        enable_upstream_health_metrics: true
+        enable_consumer_attribute: true

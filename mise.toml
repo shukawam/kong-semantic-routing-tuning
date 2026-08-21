@@ -1,0 +1,31 @@
+[env]
+mise.file = ".env"
+
+[tasks."docker:restart"]
+description = "Restart the demo stack (Kong 3.15 + Redis x2 + Langfuse)"
+dir = "{{ config_root }}"
+run = """
+docker compose -f compose.yaml down -v;
+docker compose -f compose.yaml up -d
+"""
+
+[tasks."deck:sync"]
+description = "Sync Gateway setting using deck"
+dir = "{{ config_root }}/config/kong"
+run = """
+deck gateway sync kong.yaml
+"""
+
+[tasks."semtune:lab"]
+description = "Launch JupyterLab for semantic routing tuning"
+dir = "{{ config_root }}"
+run = """
+uv run jupyter lab notebooks/semantic_routing_tuning.ipynb
+"""
+
+[tasks."semtune:test"]
+description = "Run semantic tuning unit tests"
+dir = "{{ config_root }}"
+run = """
+uv run pytest -v
+"""

@@ -1,0 +1,21 @@
+# 秘密情報 — 絶対にコミットしないこと
+.env
+.certs/
+config/kong/.certs/
+
+# 埋め込みキャッシュ(再生成可能)
+.cache/
+notebooks/.cache/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store

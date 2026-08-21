@@ -1,0 +1,186 @@
+# Semantic Routing 評価用 Golden Dataset。全 40 件。
+# easy 30 件(各 target 10 件) + boundary 10 件。
+# expected は「その業務を担当すべき target」として人が判断した値。
+# boundary は初期設定では誤りやすいクエリで、note に判断理由を必ず書く。
+cases:
+  # --- market-research (easy) ---
+  - id: mr-001
+    query: 今週の日銀金融政策決定会合の結果が円相場に与える影響を教えて
+    expected: market-research
+    difficulty: easy
+  - id: mr-002
+    query: 米国の雇用統計が予想を上回った場合、長期金利はどう動く見込みか
+    expected: market-research
+    difficulty: easy
+  - id: mr-003
+    query: 直近の日経平均の調整局面について、業種別の寄与度をまとめて
+    expected: market-research
+    difficulty: easy
+  - id: mr-004
+    query: 半導体セクターの2026年度業績見通しをアナリストレポートから要約して
+    expected: market-research
+    difficulty: easy
+  - id: mr-005
+    query: ユーロ円の3か月先のレンジ予想と、その根拠となる材料を整理して
+    expected: market-research
+    difficulty: easy
+  - id: mr-006
+    query: 原油価格の上昇が国内インフレ率に与える影響を試算して
+    expected: market-research
+    difficulty: easy
+  - id: mr-007
+    query: 米国債イールドカーブの形状変化から読み取れる景気シグナルを解説して
+    expected: market-research
+    difficulty: easy
+  - id: mr-008
+    query: 新興国通貨のボラティリティが高まっている背景を説明して
+    expected: market-research
+    difficulty: easy
+  - id: mr-009
+    query: 国内REIT市場の資金流出入の直近トレンドを要約して
+    expected: market-research
+    difficulty: easy
+  - id: mr-010
+    query: 決算説明会資料から、当該企業の来期ガイダンスの前提条件を抜き出して
+    expected: market-research
+    difficulty: easy
+
+  # --- dev-support (easy) ---
+  - id: ds-001
+    query: このJavaのバッチが夜間処理でOOMになる。ヒープダンプの見方を教えて
+    expected: dev-support
+    difficulty: easy
+  - id: ds-002
+    query: 明細テーブルに対する集計SQLが遅い。実行計画の改善案を出して
+    expected: dev-support
+    difficulty: easy
+  - id: ds-003
+    query: Spring BootでDBコネクションプールの枯渇を検知するメトリクスの設定方法は
+    expected: dev-support
+    difficulty: easy
+  - id: ds-004
+    query: 固定長レコードのテキストをJSONに変換するPythonスクリプトを書いて
+    expected: dev-support
+    difficulty: easy
+  - id: ds-005
+    query: このシェルスクリプトのエラーハンドリングをレビューして
+    expected: dev-support
+    difficulty: easy
+  - id: ds-006
+    query: Kafkaコンシューマのリバランスが頻発する原因の切り分け手順を教えて
+    expected: dev-support
+    difficulty: easy
+  - id: ds-007
+    query: Oracleからのマイグレーションで、日付型の差異を吸収するDDLを書いて
+    expected: dev-support
+    difficulty: easy
+  - id: ds-008
+    query: 単体テストのカバレッジが上がらない。テスト設計の観点を整理して
+    expected: dev-support
+    difficulty: easy
+  - id: ds-009
+    query: CI上でだけ失敗するテストの原因調査の進め方を教えて
+    expected: dev-support
+    difficulty: easy
+  - id: ds-010
+    query: REST APIのページネーション実装のサンプルコードを書いて
+    expected: dev-support
+    difficulty: easy
+
+  # --- general / CATCHALL (easy) ---
+  - id: gn-001
+    query: 明日の会議のアジェンダのたたき台を作って
+    expected: general
+    difficulty: easy
+  - id: gn-002
+    query: 議事録の体裁を整えて、決定事項と宿題を分けて
+    expected: general
+    difficulty: easy
+  - id: gn-003
+    query: 社内向けのお知らせメールの文面を丁寧語で書いて
+    expected: general
+    difficulty: easy
+  - id: gn-004
+    query: この英文メールを日本語に翻訳して
+    expected: general
+    difficulty: easy
+  - id: gn-005
+    query: 新入社員向けの自己紹介スライドの構成案を考えて
+    expected: general
+    difficulty: easy
+  - id: gn-006
+    query: 部内の懇親会の案内文を作って
+    expected: general
+    difficulty: easy
+  - id: gn-007
+    query: このグラフのタイトルとして適切な案を3つ出して
+    expected: general
+    difficulty: easy
+  - id: gn-008
+    query: 昼食におすすめの店を教えて
+    expected: general
+    difficulty: easy
+  - id: gn-009
+    query: この文章を200字に要約して
+    expected: general
+    difficulty: easy
+  - id: gn-010
+    query: 来週の予定を整理してTODOリストにして
+    expected: general
+    difficulty: easy
+
+  # --- boundary: market-research x dev-support ---
+  - id: bd-001
+    query: 株価の時系列データから移動平均とボラティリティを計算するPythonコードを書いて
+    expected: dev-support
+    difficulty: boundary
+    note: 題材は相場だが、求められている成果物はコードそのもの。相場の見通しは問われていない。
+  - id: bd-002
+    query: 相場データの日次取り込みバッチが遅延している。原因の切り分け手順を教えて
+    expected: dev-support
+    difficulty: boundary
+    note: 扱うデータが市場データというだけで、問いはバッチ障害の調査。
+  - id: bd-003
+    query: 経済指標APIから取得できる項目のうち、景気判断に効くのはどれか教えて
+    expected: market-research
+    difficulty: boundary
+    note: API という語で開発寄りに見えるが、問われているのは指標そのものの解釈。
+
+  # --- boundary: market-research x general ---
+  - id: bd-004
+    query: 今日の相場、どうだった
+    expected: market-research
+    difficulty: boundary
+    note: 雑談調で情報量が少ないが、求めているのは市場情報。短文で埋め込みが不安定になりやすい例。
+  - id: bd-005
+    query: 来週の投資家向け説明会の案内文を作って
+    expected: general
+    difficulty: boundary
+    note: 題材は投資家向けだが、作業は案内文の作成であり相場の分析ではない。
+  - id: bd-006
+    query: 決算説明会の資料を読んで、要点を3行にまとめて
+    expected: market-research
+    difficulty: boundary
+    note: 単なる要約依頼に見えるが、何を要点とするかの取捨に業績・見通しの理解が要る。
+
+  # --- boundary: dev-support x general ---
+  - id: bd-007
+    query: エクセルの関数がわからないので教えて
+    expected: general
+    difficulty: boundary
+    note: 「開発支援」に見えるが業務システム開発ではなく一般的なPC操作の質問。
+  - id: bd-008
+    query: 開発チーム向けのリリース手順書のドラフトを書いて
+    expected: general
+    difficulty: boundary
+    note: 開発が題材だが、成果物は文書であってコードやSQLの支援ではない。
+  - id: bd-009
+    query: このエラーメッセージを日本語に訳して、意味を教えて
+    expected: dev-support
+    difficulty: boundary
+    note: 翻訳依頼に見えるが、必要なのはエラーの技術的な解釈。
+  - id: bd-010
+    query: 障害の一次報告メールを関係者向けに書いて
+    expected: general
+    difficulty: boundary
+    note: 障害が題材だが、求められているのは社内向けの文面であって原因調査ではない。

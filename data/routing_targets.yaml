@@ -1,0 +1,24 @@
+# Semantic Routing の target 定義。
+# チューニングで書き換わるのはこのファイル。正解ラベル(golden_dataset.yaml)は固定する。
+# embeddings の値は kong.yaml の config.embeddings と必ず一致させること。
+embeddings:
+  provider: azure
+  instance: shukawam-ai-foundry-resource
+  deployment: text-embedding-3-large
+  api_version: "2024-02-01"
+  dimensions: 3072
+  distance_metric: cosine
+
+# kong.yaml の config.vectordb.threshold と対応する。コサイン距離の上限(半径)。
+threshold: 0.5
+
+targets:
+  - name: market-research
+    deployment: gpt-5.6-sol
+    description: 国内外の市場動向、金利・為替・株式の相場見通し、経済指標やアナリストレポートの要約、解説を行う
+  - name: dev-support
+    deployment: gpt-5.6-terra
+    description: コード生成、レビュー、SQL、バッチ障害の調査などの開発支援を行う
+  - name: general
+    deployment: gpt-5.6-luna
+    description: CATCHALL
