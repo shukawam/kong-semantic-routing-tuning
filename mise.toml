@@ -20,6 +20,27 @@ deck gateway sync kong.yaml
 description = "Launch JupyterLab for semantic routing tuning"
 dir = "{{ config_root }}"
 run = """
+# Wait for Kong to be healthy
+echo "Waiting for Kong to be ready..."
+for i in {1..30}; do
+  if docker compose exec -T kong kong health > /dev/null 2>&1; then
+    echo "Kong is ready"
+    break
+  fi
+  if [ $i -eq 30 ]; then
+    echo "Kong failed to become ready"
+    exit 1
+  fi
+  sleep 2
+done
+
+# Send initial request to initialize vectors
+echo "Sending initialization request..."
+curl -s -X POST http://localhost:8000/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{"messages":[{"role":"user","content":"hi"}]}' > /dev/null
+
+echo "Starting JupyterLab..."
 uv run jupyter lab notebooks/semantic_routing_tuning.ipynb
 """
 

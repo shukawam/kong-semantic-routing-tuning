@@ -1,6 +1,6 @@
 _format_version: "3.0"
 _konnect:
-  control_plane_name: semtune-gateway
+  control_plane_name: tokenomics-sandbox
 
 services:
   - name: semantic-routing-service

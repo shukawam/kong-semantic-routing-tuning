@@ -19,7 +19,7 @@ volumes:
 services:
   kong:
     <<: *default
-    image: kong/kong-gateway:3.15
+    image: kong/kong-gateway:3.16
     container_name: kong
     ports:
       - 8000:8000
